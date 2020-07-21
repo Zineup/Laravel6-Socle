@@ -109,7 +109,8 @@ class CityController extends Controller
     {
         City::where('id',$id)->delete();
    
-        return Redirect()->route('city.index')->with('success','City deleted successfully');
+        return Redirect()->route('city.index')
+        ->with('success','City deleted successfully !');
   
     }
 }
