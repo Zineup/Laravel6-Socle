@@ -22,7 +22,10 @@ class DatabaseSeeder extends Seeder
             'sessions',
         ]);
 
-        $this->call(AuthTableSeeder::class);
+        $this->call([
+            AuthTableSeeder::class, 
+            CityTableSeeder::class
+        ]);
 
         Model::reguard();
     }

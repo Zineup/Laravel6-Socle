@@ -33,3 +33,17 @@ Route::group(['namespace' => 'Backend', 'prefix' => 'admin', 'as' => 'admin.', '
      */
     include_route_files(__DIR__.'/backend/');
 });
+
+
+/*
+ * Route for CRUD BASICS (Ville) 
+*/
+
+Route::group([
+    'namespace' => 'CRUD',
+    'middleware' => 'auth:'
+], function () {
+    Route::resource('city', 'CityController');
+});
+
+
