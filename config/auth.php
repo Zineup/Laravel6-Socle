@@ -13,8 +13,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
-        'passwords' => 'users',
+        'guard' => 'session-guard',
+        'passwords' => 'session-users',
     ],
 
     /*
@@ -34,15 +34,20 @@ return [
     |
     */
 
-    'guards' => [
+    'guards' => [        
         'web' => [
-            'driver' => 'session',
+            'driver' => 'keycloak-web',
             'provider' => 'users',
+        ],
+
+        'session-guard' => [
+            'driver' => 'session',
+            'provider' => 'session-users',
         ],
 
         'api' => [
             'driver' => 'token',
-            'provider' => 'users',
+            'provider' => 'session-users',
             'hash' => false,
         ],
     ],
@@ -64,11 +69,17 @@ return [
     |
     */
 
-    'providers' => [
+    'providers' => [        
         'users' => [
+            'driver' => 'keycloak-users',
+            'model' => Vizir\KeycloakWebGuard\Models\KeycloakUser::class,
+        ],
+
+        'session-users' => [
             'driver' => 'eloquent',
             'model' => App\Models\Auth\User::class,
         ],
+
 
         // 'users' => [
         //     'driver' => 'database',
@@ -93,7 +104,7 @@ return [
 
     'passwords' => [
         'users' => [
-            'provider' => 'users',
+            'provider' => 'session-users',
             'table' => 'password_resets',
             'expire' => 60,
         ],
