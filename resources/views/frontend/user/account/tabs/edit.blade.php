@@ -10,11 +10,11 @@
                     <input type="radio" name="avatar_type" value="gravatar" {{ $logged_in_user->avatar_type == 'gravatar' ? 'checked' : '' }} /> Gravatar
                     <input type="radio" name="avatar_type" value="storage" {{ $logged_in_user->avatar_type == 'storage' ? 'checked' : '' }} /> Upload
 
-                    @foreach($logged_in_user->providers as $provider)
+                    {{-- @foreach($logged_in_user->providers as $provider)
                         @if(strlen($provider->avatar))
                             <input type="radio" name="avatar_type" value="{{ $provider->provider }}" {{ $logged_in_user->avatar_type == $provider->provider ? 'checked' : '' }} /> {{ ucfirst($provider->provider) }}
                         @endif
-                    @endforeach
+                    @endforeach --}}
                 </div>
             </div><!--form-group-->
 
@@ -53,7 +53,7 @@
         </div><!--col-->
     </div><!--row-->
 
-    @if ($logged_in_user->canChangeEmail())
+    {{-- @if ($logged_in_user->canChangeEmail())
         <div class="row">
             <div class="col">
                 <div class="alert alert-info">
@@ -71,7 +71,7 @@
                 </div><!--form-group-->
             </div><!--col-->
         </div><!--row-->
-    @endif
+    @endif --}}
 
     <div class="row">
         <div class="col">

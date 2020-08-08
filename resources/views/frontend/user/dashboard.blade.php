@@ -26,7 +26,7 @@
                                     <p class="card-text">
                                         <small>
                                             <i class="fas fa-envelope"></i> {{ $logged_in_user->email }}<br/>
-                                            <i class="fas fa-calendar-check"></i> @lang('strings.frontend.general.joined') {{ timezone()->convertToLocal($logged_in_user->created_at, 'F jS, Y') }}
+                                            {{-- <i class="fas fa-calendar-check"></i> @lang('strings.frontend.general.joined') {{ timezone()->convertToLocal($logged_in_user->created_at, 'F jS, Y') }} --}}
                                         </small>
                                     </p>
 
@@ -36,11 +36,11 @@
                                             <i class="fas fa-user-circle"></i> @lang('navs.frontend.user.account')
                                         </a>
 
-                                        @can('view backend')
+                                        {{-- @can('view backend')
                                             &nbsp;<a href="{{ route('admin.dashboard')}}" class="btn btn-danger btn-sm mb-1">
                                                 <i class="fas fa-user-secret"></i> @lang('navs.frontend.user.administration')
                                             </a>
-                                        @endcan
+                                        @endcan --}}
                                     </p>
                                 </div>
                             </div>

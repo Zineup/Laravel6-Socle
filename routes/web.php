@@ -41,4 +41,4 @@ Route::group(['namespace' => 'Backend', 'prefix' => 'admin', 'as' => 'admin.', '
     
 // });
 
-Route::resource('test', 'TestController')->middleware('web');
+Route::resource('test', 'TestController');

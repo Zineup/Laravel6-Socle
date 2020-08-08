@@ -13,8 +13,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'session-guard',
-        'passwords' => 'session-users',
+        'guard' => 'web',
+        'passwords' => 'users',
     ],
 
     /*
@@ -104,7 +104,7 @@ return [
 
     'passwords' => [
         'users' => [
-            'provider' => 'session-users',
+            'provider' => 'users',
             'table' => 'password_resets',
             'expire' => 60,
         ],

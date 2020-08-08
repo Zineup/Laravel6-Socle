@@ -7,14 +7,11 @@ use Illuminate\Support\Facades\Auth;
 
 class TestController extends Controller
 {
-    protected function guard()
-    {
-        return Auth::guard('web');
-    }
+ 
     
     public function __construct()
     {
-        $this->middleware('web');
+        $this->middleware('authkey:web');
     }
     /**
      * Display a listing of the resoce.
@@ -23,6 +20,7 @@ class TestController extends Controller
      */
     public function index()
     {
+       
         dd( Auth::guard('web')->user() );
         return Auth::guard('web')->user()->email;
     }

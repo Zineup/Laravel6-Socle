@@ -49,7 +49,7 @@ return [
      *
      * @see Vizir\KeycloakWebGuard\Controllers\AuthController::callback()
      */
-    'redirect_url' => '/test',
+    'redirect_url' => '/dashboard',
 
     /**
      * The routes for authenticate
@@ -61,10 +61,10 @@ return [
      * the Vizir\KeycloakWebGuard\Controllers\AuthController controller.
      */
     'routes' => [
-        'login' => 'loginkey',
-        'logout' => 'logoutkey',
-        'register' => 'registerkey',
-        'callback' => 'callbackkey',
+        'login' => 'login',
+        'logout' => 'logout',
+        'register' => 'register',
+        'callback' => 'callback',
     ],
 
     /**
