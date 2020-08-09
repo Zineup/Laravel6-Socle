@@ -15,7 +15,7 @@
         <tr>
             <th>@lang('labels.frontend.user.profile.created_at')</th>
             <td>{{ timezone()->convertToLocal($logged_in_user->getCreatedAt()) }} ({{$logged_in_user->getCreatedAt()->diffForHumans() }})</td>
-            {{-- <td> {{timezone()->convertToLocal(Carbon\Carbon::createFromTimestamp($logged_in_user->created_at))}}</td> --}}
+            
         </tr>
         <tr>
             <th>@lang('labels.frontend.user.profile.last_updated')</th>

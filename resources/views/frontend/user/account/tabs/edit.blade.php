@@ -30,6 +30,7 @@
                 {{ html()->label(__('validation.attributes.frontend.first_name'))->for('first_name') }}
 
                 {{ html()->text('first_name')
+                    ->value(old('first_name', $logged_in_user->first_name))
                     ->class('form-control')
                     ->placeholder(__('validation.attributes.frontend.first_name'))
                     ->attribute('maxlength', 191)
@@ -45,6 +46,7 @@
                 {{ html()->label(__('validation.attributes.frontend.last_name'))->for('last_name') }}
 
                 {{ html()->text('last_name')
+                    ->value(old('last_name', $logged_in_user->last_name))
                     ->class('form-control')
                     ->placeholder(__('validation.attributes.frontend.last_name'))
                     ->attribute('maxlength', 191)
