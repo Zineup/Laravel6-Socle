@@ -55,6 +55,21 @@
         </div><!--col-->
     </div><!--row-->
 
+    <div class="row">
+        <div class="col">
+            <div class="form-group">
+                {{ html()->label(__('validation.attributes.frontend.email'))->for('email') }}
+
+                {{ html()->text('email')
+                    ->value(old('email', $logged_in_user->email))
+                    ->class('form-control')
+                    ->placeholder(__('validation.attributes.frontend.email'))
+                    ->attribute('maxlength', 191)
+                    ->required() }}
+            </div><!--form-group-->
+        </div><!--col-->
+    </div><!--row-->
+
     {{-- @if ($logged_in_user->canChangeEmail())
         <div class="row">
             <div class="col">

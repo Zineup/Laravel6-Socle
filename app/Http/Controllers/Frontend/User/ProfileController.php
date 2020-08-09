@@ -52,6 +52,7 @@ class ProfileController extends Controller
             'json' => [
                 'firstName' => $request['first_name'],
                 'lastName' => $request['last_name'],
+                'email' => $request['email'],
             ]
         ]
         );
