@@ -8,13 +8,15 @@
             <i class="fas fa-trash"></i>
         </a>
     </div>
-@else
+@else --}}
     <div class="btn-group" role="group" aria-label="@lang('labels.backend.access.users.user_actions')">
-        <a href="{{ route('admin.auth.user.show', $user) }}" data-toggle="tooltip" data-placement="top" title="@lang('buttons.general.crud.view')" class="btn btn-info">
+
+        
+        <a href="{{ route('admin.auth.user.show', $user->uid) }}" data-toggle="tooltip" data-placement="top" title="@lang('buttons.general.crud.view')" class="btn btn-info">
             <i class="fas fa-eye"></i>
         </a>
 
-        <a href="{{ route('admin.auth.user.edit', $user) }}" data-toggle="tooltip" data-placement="top" title="@lang('buttons.general.crud.edit')" class="btn btn-primary">
+        {{-- <a href="{{ route('admin.auth.user.edit', $user) }}" data-toggle="tooltip" data-placement="top" title="@lang('buttons.general.crud.edit')" class="btn btn-primary">
             <i class="fas fa-edit"></i>
         </a>
 
@@ -62,6 +64,6 @@
                        class="dropdown-item">@lang('buttons.general.crud.delete')</a>
                 @endif
             </div>
-        </div>
+        </div> --}}
     </div>
-@endif --}}
+{{-- @endif --}}

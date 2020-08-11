@@ -39,11 +39,11 @@
         <div class="row">
             <div class="col">
                 <small class="float-right text-muted">
-                    <strong>@lang('labels.backend.access.users.tabs.content.overview.created_at'):</strong> {{ timezone()->convertToLocal($user->created_at) }} ({{ $user->created_at->diffForHumans() }}),
-                    <strong>@lang('labels.backend.access.users.tabs.content.overview.last_updated'):</strong> {{ timezone()->convertToLocal($user->updated_at) }} ({{ $user->updated_at->diffForHumans() }})
-                    @if($user->trashed())
+                    <strong>@lang('labels.backend.access.users.tabs.content.overview.created_at'):</strong> {{ timezone()->convertToLocal($user->getCreatedAt()) }} ({{ $user->getCreatedAt()->diffForHumans() }}),
+                    {{-- <strong>@lang('labels.backend.access.users.tabs.content.overview.last_updated'):</strong> {{ timezone()->convertToLocal($user->updated_at) }} ({{ $user->updated_at->diffForHumans() }}) --}}
+                    {{-- @if($user->trashed())
                         <strong>@lang('labels.backend.access.users.tabs.content.overview.deleted_at'):</strong> {{ timezone()->convertToLocal($user->deleted_at) }} ({{ $user->deleted_at->diffForHumans() }})
-                    @endif
+                    @endif --}}
                 </small>
             </div><!--col-->
         </div><!--row-->

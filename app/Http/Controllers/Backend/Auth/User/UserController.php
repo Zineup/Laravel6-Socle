@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Backend\Auth\User;
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
-use App\Models\Auth\User;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use App\Http\Controllers\Controller;
 use App\Events\Backend\Auth\User\UserDeleted;
@@ -15,6 +15,7 @@ use App\Repositories\Backend\Auth\PermissionRepository;
 use App\Http\Requests\Backend\Auth\User\StoreUserRequest;
 use App\Http\Requests\Backend\Auth\User\ManageUserRequest;
 use App\Http\Requests\Backend\Auth\User\UpdateUserRequest;
+use App\Models\Auth\User as AuthUser;
 
 /**
  * Class UserController.
@@ -47,7 +48,9 @@ class UserController extends Controller
         
         $client = new Client(['headers' => [
             'Authorization' => 'Bearer '. $access_token,
-            ]]);
+        ]]);
+
+        //******************* Get Users **************/
 
         $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users';
 
@@ -55,7 +58,11 @@ class UserController extends Controller
 
         $users = json_decode($request->getBody());
 
+        $array_users = [];
+
         foreach($users as $user){
+
+            $user_object = new User();
 
             //Getting User Role       
 
@@ -75,32 +82,22 @@ class UserController extends Controller
                 }
             }
 
-            if(!isset($user->lastName)){
-                $user->lastName = '';
-            }
+            $user_object->uid = $user->id;
+            $user_object->last_name = isset($user->lastName) ? $user->lastName : "";
+            $user_object->first_name = isset($user->firstName) ? $user->firstName : "";
+            $user_object->email = isset($user->email) ? $user->email : "";
+            $user_object->createdTimestamp = $user->createdTimestamp;
+            $user_object->roles = $user->roles;
+            $user_object->confirmed = $user->emailVerified;
 
-            if(!isset($user->firstName)){
-                $user->firstName = '';
-            }
+            array_push($array_users, $user_object);
 
-            if(!isset($user->username)){
-                $user->username = '';
-            } 
-
-            if(!isset($user->email)){
-                $user->email = '';
-            }
-
-            if(isset($user->createdTimestamp)){
-                $timestamp = substr($user->createdTimestamp, 0, -3);
-                $user->createdTimestamp = Carbon::createFromTimestamp($timestamp);
-            }        
         }
 
         
         //dd($users);
 
-        return view('backend.auth.user.index')->withUsers($users);
+        return view('backend.auth.user.index')->withUsers($array_users);
             //->withUsers($this->userRepository->getActivePaginated(25, 'id', 'asc'));
     }
 
@@ -244,14 +241,36 @@ class UserController extends Controller
         return redirect()->route('admin.auth.user.index')->withFlashSuccess(__('alerts.backend.users.created'));
     }
 
-    /**
-     * @param ManageUserRequest $request
-     * @param User              $user
+    /**        
      *
      * @return mixed
      */
-    public function show(ManageUserRequest $request, User $user)
+    public function show(ManageUserRequest $request)
     {
+        $access_token = $this->getAccessToken();
+        
+        $client = new Client(['headers' => [
+            'Authorization' => 'Bearer '. $access_token,
+        ]]);
+
+        //******************* Get User **************/
+
+        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users/'. $request['uid'];
+
+        $request = $client->request('GET', $url);
+
+        $response = json_decode($request->getBody());
+
+        $user = new User();
+
+        $user->uid = $response->id;
+        $user->username = $response->username;
+        $user->last_name = isset($response->lastName) ? $response->lastName : "";
+        $user->first_name = isset($response->firstName) ? $response->firstName : "";
+        $user->email =  isset($response->email) ? $response->email : "";
+        $user->confirmed = $response->emailVerified;
+        $user->createdTimestamp =  $response->createdTimestamp;
+
         return view('backend.auth.user.show')
             ->withUser($user);
     }

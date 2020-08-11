@@ -27,7 +27,7 @@ Route::group([
         Route::post('user', [UserController::class, 'store'])->name('user.store');
 
         // Specific User
-        Route::group(['prefix' => 'user/{user}'], function () {
+        Route::group(['prefix' => 'user/{uid}'], function () {
             // User
             Route::get('/', [UserController::class, 'show'])->name('user.show');
             Route::get('edit', [UserController::class, 'edit'])->name('user.edit');

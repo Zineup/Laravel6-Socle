@@ -1,14 +1,24 @@
 <div class="col">
     <div class="table-responsive">
         <table class="table table-hover">
-            <tr>
+            {{-- <tr>
                 <th>@lang('labels.backend.access.users.tabs.content.overview.avatar')</th>
                 <td><img src="{{ $user->picture }}" class="user-profile-image" /></td>
+            </tr> --}}
+
+            <tr>
+                <th>User ID</th>
+                <td>{{ $user->uid }}</td>
+            </tr>
+
+            <tr>
+                <th>Username</th>
+                <td>{{ $user->username }}</td>
             </tr>
 
             <tr>
                 <th>@lang('labels.backend.access.users.tabs.content.overview.name')</th>
-                <td>{{ $user->name }}</td>
+                <td>{{ $user->first_name }} {{ $user->last_name }}</td>
             </tr>
 
             <tr>
@@ -26,9 +36,14 @@
                 <td>@include('backend.auth.user.includes.confirm', ['user' => $user])</td>
             </tr>
 
-            <tr>
+            {{-- <tr>
                 <th>@lang('labels.backend.access.users.tabs.content.overview.timezone')</th>
                 <td>{{ $user->timezone }}</td>
+            </tr> --}}
+
+            <tr>
+                <th>Created At</th>
+                <td>{{ $user->getCreatedAt() }}</td>
             </tr>
 
             <tr>

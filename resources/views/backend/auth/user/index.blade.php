@@ -41,8 +41,8 @@
                         <tbody>
                         @foreach($users as $user)
                             <tr>
-                                <td>{{ $user->lastName }}</td>
-                                <td>{{ $user->firstName }}</td>
+                                <td>{{ $user->last_name }}</td>
+                                <td>{{ $user->first_name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>@include('backend.auth.user.includes.confirm', ['user' => $user])</td>
                                 <td>
@@ -50,9 +50,9 @@
                                         {{ $role }}
                                     @endforeach
                                 </td>
-                                {{-- <td>{{ $user->permissions_label }}</td> --}}
+                                 <td>{{--{{ $user->permissions_label }} --}}</td>
                                 <td>@include('backend.auth.user.includes.social-buttons', ['user' => $user])</td>
-                                <td>{{ $user->createdTimestamp->diffForHumans() }}</td>
+                                <td>{{ $user->getCreatedAt()->diffForHumans() }}</td>
                                 <td class="btn-td">@include('backend.auth.user.includes.actions', ['user' => $user])</td>
                             </tr>
                         @endforeach
