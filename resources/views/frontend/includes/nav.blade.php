@@ -32,9 +32,10 @@
                        aria-haspopup="true" aria-expanded="false">{{ $logged_in_user->name }}</a>
 
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuUser">
-                        {{-- @can('view backend')
+                        
+                        @if($logged_in_user->isAdmin())
                             <a href="{{ route('admin.dashboard') }}" class="dropdown-item">@lang('navs.frontend.user.administration')</a>
-                        @endcan --}}
+                        @endif
 
                         <a href="{{ route('frontend.user.account') }}" class="dropdown-item {{ active_class(Route::is('frontend.user.account')) }}">@lang('navs.frontend.user.account')</a>
                         <a href="{{ route('keycloak.logout') }}" class="dropdown-item">@lang('navs.general.logout')</a>

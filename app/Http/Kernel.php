@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
         
         'authkey' => \App\Http\Middleware\KeycloakAuthenticated::class,
         'cankey' => \App\Http\Middleware\KeycloakCan::class,
+        'adminkey' => \App\Http\Middleware\AdminMiddleware::class,
         
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
@@ -75,7 +76,7 @@ class Kernel extends HttpKernel
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'password_expires' => \App\Http\Middleware\PasswordExpires::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
-        'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
+        //'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,

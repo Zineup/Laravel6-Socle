@@ -55,7 +55,7 @@
             <div class="dropdown-header text-center">
               <strong>Account</strong>
             </div>
-            <a class="dropdown-item" href="{{ route('frontend.auth.logout') }}">
+            <a class="dropdown-item" href="{{ route('keycloak.logout') }}">
                 <i class="fas fa-lock"></i> @lang('navs.general.logout')
             </a>
           </div>

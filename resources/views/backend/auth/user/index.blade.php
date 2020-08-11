@@ -41,14 +41,18 @@
                         <tbody>
                         @foreach($users as $user)
                             <tr>
-                                <td>{{ $user->last_name }}</td>
-                                <td>{{ $user->first_name }}</td>
+                                <td>{{ $user->lastName }}</td>
+                                <td>{{ $user->firstName }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>@include('backend.auth.user.includes.confirm', ['user' => $user])</td>
-                                <td>{{ $user->roles_label }}</td>
-                                <td>{{ $user->permissions_label }}</td>
+                                <td>
+                                    @foreach ($user->roles as $role)
+                                        {{ $role }}
+                                    @endforeach
+                                </td>
+                                {{-- <td>{{ $user->permissions_label }}</td> --}}
                                 <td>@include('backend.auth.user.includes.social-buttons', ['user' => $user])</td>
-                                <td>{{ $user->updated_at->diffForHumans() }}</td>
+                                <td>{{ $user->createdTimestamp->diffForHumans() }}</td>
                                 <td class="btn-td">@include('backend.auth.user.includes.actions', ['user' => $user])</td>
                             </tr>
                         @endforeach
@@ -60,13 +64,13 @@
         <div class="row">
             <div class="col-7">
                 <div class="float-left">
-                    {!! $users->total() !!} {{ trans_choice('labels.backend.access.users.table.total', $users->total()) }}
+                    {{-- {!! $users->total() !!} {{ trans_choice('labels.backend.access.users.table.total', $users->total()) }} --}}
                 </div>
             </div><!--col-->
 
             <div class="col-5">
                 <div class="float-right">
-                    {!! $users->render() !!}
+                    {{-- {!! $users->render() !!} --}}
                 </div>
             </div><!--col-->
         </div><!--row-->

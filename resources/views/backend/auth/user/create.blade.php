@@ -23,6 +23,20 @@
 
                 <div class="row mt-4 mb-4">
                     <div class="col">
+
+                        <div class="form-group row">
+                            {{ html()->label('Username')->class('col-md-2 form-control-label')->for('username') }}
+
+                            <div class="col-md-10">
+                                {{ html()->text('username')
+                                    ->class('form-control')
+                                    ->placeholder('Username')
+                                    ->attribute('maxlength', 191)
+                                    ->required()
+                                    ->autofocus() }}
+                            </div><!--col-->
+                        </div><!--form-group-->
+
                         <div class="form-group row">
                             {{ html()->label(__('validation.attributes.backend.access.users.first_name'))->class('col-md-2 form-control-label')->for('first_name') }}
 
@@ -126,19 +140,18 @@
                                         <thead>
                                         <tr>
                                             <th>@lang('labels.backend.access.users.table.roles')</th>
-                                            <th>@lang('labels.backend.access.users.table.permissions')</th>
+                                            {{-- <th>@lang('labels.backend.access.users.table.permissions')</th> --}}
                                         </tr>
                                         </thead>
                                         <tbody>
                                         <tr>
                                             <td>
-                                                @if($roles->count())
                                                     @foreach($roles as $role)
                                                         <div class="card">
                                                             <div class="card-header">
                                                                 <div class="checkbox d-flex align-items-center">
                                                                     {{ html()->label(
-                                                                            html()->checkbox('roles[]', old('roles') && in_array($role->name, old('roles')) ? true : false, $role->name)
+                                                                            html()->checkbox('roles[]', old('roles') && in_array($role->name, old('roles')) ? true : false, $role->id.'/'.$role->name)
                                                                                   ->class('switch-input')
                                                                                   ->id('role-'.$role->id)
                                                                             . '<span class="switch-slider" data-checked="on" data-unchecked="off"></span>')
@@ -147,7 +160,7 @@
                                                                     {{ html()->label(ucwords($role->name))->for('role-'.$role->id) }}
                                                                 </div>
                                                             </div>
-                                                            <div class="card-body">
+                                                            {{-- <div class="card-body">
                                                                 @if($role->id != 1)
                                                                     @if($role->permissions->count())
                                                                         @foreach($role->permissions as $permission)
@@ -159,12 +172,12 @@
                                                                 @else
                                                                     @lang('labels.backend.access.users.all_permissions')
                                                                 @endif
-                                                            </div>
+                                                            </div> --}}
                                                         </div><!--card-->
                                                     @endforeach
-                                                @endif
+                                                
                                             </td>
-                                            <td>
+                                            {{-- <td>
                                                 @if($permissions->count())
                                                     @foreach($permissions as $permission)
                                                         <div class="checkbox d-flex align-items-center">
@@ -179,7 +192,7 @@
                                                         </div>
                                                     @endforeach
                                                 @endif
-                                            </td>
+                                            </td> --}}
                                         </tr>
                                         </tbody>
                                     </table>
