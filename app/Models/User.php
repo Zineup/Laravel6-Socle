@@ -27,8 +27,12 @@ class User extends Model
     public function getCreatedAt()
     {
         $timestamp = substr($this->createdTimestamp, 0, -3);
-        return Carbon::createFromTimestamp($timestamp);
-        
+        return Carbon::createFromTimestamp($timestamp);        
+    }
+
+    public function getRoles()
+    {
+        return json_decode(json_encode ($this->roles), FALSE);        
     }
 
     /**

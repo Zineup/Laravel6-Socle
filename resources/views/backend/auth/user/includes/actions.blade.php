@@ -16,11 +16,20 @@
             <i class="fas fa-eye"></i>
         </a>
 
-        {{-- <a href="{{ route('admin.auth.user.edit', $user) }}" data-toggle="tooltip" data-placement="top" title="@lang('buttons.general.crud.edit')" class="btn btn-primary">
+        <a href="{{ route('admin.auth.user.edit', $user->uid) }}" data-toggle="tooltip" data-placement="top" title="@lang('buttons.general.crud.edit')" class="btn btn-primary">
             <i class="fas fa-edit"></i>
         </a>
 
-        <div class="btn-group btn-group-sm" role="group">
+        <a href="{{ route('admin.auth.user.destroy', $user->uid) }}"
+                       data-method="delete"
+                       data-trans-button-cancel="@lang('buttons.general.cancel')"
+                       data-trans-button-confirm="@lang('buttons.general.crud.delete')"
+                       data-trans-title="@lang('strings.backend.general.are_you_sure')"
+                       class="dropdown-item">
+            @lang('buttons.general.crud.delete')
+        </a>
+
+        {{-- <div class="btn-group btn-group-sm" role="group">
             <button id="userActions" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 @lang('labels.general.more')
             </button>

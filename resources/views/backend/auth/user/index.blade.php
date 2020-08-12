@@ -46,8 +46,8 @@
                                 <td>{{ $user->email }}</td>
                                 <td>@include('backend.auth.user.includes.confirm', ['user' => $user])</td>
                                 <td>
-                                    @foreach ($user->roles as $role)
-                                        {{ $role }}
+                                    @foreach ($user->getRoles() as $role)
+                                        {{ $role->name }}
                                     @endforeach
                                 </td>
                                  <td>{{--{{ $user->permissions_label }} --}}</td>
