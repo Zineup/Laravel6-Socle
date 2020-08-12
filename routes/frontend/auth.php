@@ -15,15 +15,9 @@ use App\Http\Controllers\Frontend\Auth\UpdatePasswordController;
  */
 Route::group(['namespace' => 'Auth', 'as' => 'auth.'], function () {
     // These routes require the user to be logged in
-    Route::group(['middleware' => 'auth'], function () {
-        //Route::get('logout', [LoginController::class, 'logout'])->name('logoutAuth');
-
-        // These routes can not be hit if the password is expired
-        Route::group(['middleware' => 'password_expires'], function () {
-            // Change Password Routes
-            Route::patch('password/update', [UpdatePasswordController::class, 'update'])->name('password.update');
-        });
-
+    Route::group(['middleware' => 'authkey'], function () {
+        
+        Route::patch('password/update', [UpdatePasswordController::class, 'update'])->name('password.update');
         // Password expired routes
         Route::get('password/expired', [PasswordExpiredController::class, 'expired'])->name('password.expired');
         Route::patch('password/expired', [PasswordExpiredController::class, 'update'])->name('password.expired.update');

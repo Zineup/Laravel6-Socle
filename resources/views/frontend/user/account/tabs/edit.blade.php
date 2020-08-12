@@ -60,7 +60,7 @@
             <div class="form-group">
                 {{ html()->label(__('validation.attributes.frontend.email'))->for('email') }}
 
-                {{ html()->text('email')
+                {{ html()->email('email')
                     ->value(old('email', $logged_in_user->email))
                     ->class('form-control')
                     ->placeholder(__('validation.attributes.frontend.email'))
@@ -69,26 +69,6 @@
             </div><!--form-group-->
         </div><!--col-->
     </div><!--row-->
-
-    {{-- @if ($logged_in_user->canChangeEmail())
-        <div class="row">
-            <div class="col">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> @lang('strings.frontend.user.change_email_notice')
-                </div>
-
-                <div class="form-group">
-                    {{ html()->label(__('validation.attributes.frontend.email'))->for('email') }}
-
-                    {{ html()->email('email')
-                        ->class('form-control')
-                        ->placeholder(__('validation.attributes.frontend.email'))
-                        ->attribute('maxlength', 191)
-                        ->required() }}
-                </div><!--form-group-->
-            </div><!--col-->
-        </div><!--row-->
-    @endif --}}
 
     <div class="row">
         <div class="col">

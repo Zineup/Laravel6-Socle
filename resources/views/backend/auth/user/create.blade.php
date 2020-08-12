@@ -151,7 +151,7 @@
                                                             <div class="card-header">
                                                                 <div class="checkbox d-flex align-items-center">
                                                                     {{ html()->label(
-                                                                            html()->checkbox('roles[]', old('roles') && in_array($role->name, old('roles')) ? true : false, $role->id.'/'.$role->name)
+                                                                            html()->checkbox('roles[]', old('roles') && in_array($role->id.'/'.$role->name, old('roles')) ? true : false, $role->id.'/'.$role->name)
                                                                                   ->class('switch-input')
                                                                                   ->id('role-'.$role->id)
                                                                             . '<span class="switch-slider" data-checked="on" data-unchecked="off"></span>')

@@ -36,11 +36,11 @@
                                             <i class="fas fa-user-circle"></i> @lang('navs.frontend.user.account')
                                         </a>
 
-                                        {{-- @can('view backend')
+                                        @if($logged_in_user->isAdmin())
                                             &nbsp;<a href="{{ route('admin.dashboard')}}" class="btn btn-danger btn-sm mb-1">
                                                 <i class="fas fa-user-secret"></i> @lang('navs.frontend.user.administration')
                                             </a>
-                                        @endcan --}}
+                                        @endif
                                     </p>
                                 </div>
                             </div>

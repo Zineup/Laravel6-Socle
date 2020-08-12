@@ -1,17 +1,4 @@
 {{ html()->form('PATCH', route('frontend.auth.password.update'))->class('form-horizontal')->open() }}
-    <div class="row">
-        <div class="col">
-            <div class="form-group">
-                {{ html()->label(__('validation.attributes.frontend.old_password'))->for('old_password') }}
-
-                {{ html()->password('old_password')
-                    ->class('form-control')
-                    ->placeholder(__('validation.attributes.frontend.old_password'))
-                    ->autofocus()
-                    ->required() }}
-            </div><!--form-group-->
-        </div><!--col-->
-    </div><!--row-->
 
     <div class="row">
         <div class="col">

@@ -29,11 +29,12 @@ class StoreUserRequest extends FormRequest
     public function rules()
     {
         return [
+            'username' => ['required'],
             'first_name' => ['required'],
             'last_name' => ['required'],
             'email' => ['required', 'email'],
-            //'password' => PasswordRules::register($this->email),
-            //'roles' => ['required', 'array'],
+            'password' => ['min:6'],
+            'password_confirmation' => ['required_with:password','same:password'],
         ];
     }
 }

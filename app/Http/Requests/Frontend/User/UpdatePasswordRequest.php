@@ -18,7 +18,7 @@ class UpdatePasswordRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->canChangePassword();
+        return true;
     }
 
     /**
@@ -29,16 +29,8 @@ class UpdatePasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'old_password' => ['required'],
-            'password' => array_merge(
-                [
-                    new UnusedPassword($this->user()),
-                ],
-                PasswordRules::changePassword(
-                    $this->email,
-                    config('access.users.password_history') ? 'old_password' : null
-                )
-            ),
+            'password' => 'min:6',
+            'password_confirmation' => 'required_with:password|same:password',
         ];
     }
 }
