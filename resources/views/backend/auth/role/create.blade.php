@@ -35,25 +35,17 @@
                     </div><!--form-group-->
 
                     <div class="form-group row">
-                        {{ html()->label(__('validation.attributes.backend.access.roles.associated_permissions'))
+                        {{ html()->label('Description')
                             ->class('col-md-2 form-control-label')
-                            ->for('permissions') }}
+                            ->for('description') }}
 
-                        <div class="col-md-10">
-                            @if($permissions->count())
-                                @foreach($permissions as $permission)
-                                    <div class="checkbox d-flex align-items-center">
-                                        {{ html()->label(
-                                                html()->checkbox('permissions[]', old('permissions') && in_array($permission->name, old('permissions')) ? true : false, $permission->name)
-                                                      ->class('switch-input')
-                                                      ->id('permission-'.$permission->id)
-                                                    . '<span class="switch-slider" data-checked="on" data-unchecked="off"></span>')
-                                                ->class('switch switch-label switch-pill switch-primary mr-2')
-                                            ->for('permission-'.$permission->id) }}
-                                        {{ html()->label(ucwords($permission->name))->for('permission-'.$permission->id) }}
-                                    </div>
-                                @endforeach
-                            @endif
+                        <div class="col-md-10">                           
+                            {{ html()->textarea('description')
+                                ->class('form-control')
+                                ->placeholder('description')
+                                ->attribute('maxlength', 500)
+                                ->required()
+                                ->autofocus() }}
                         </div><!--col-->
                     </div><!--form-group-->
                 </div><!--col-->

@@ -2,39 +2,21 @@
 
 namespace App\Http\Controllers\Backend\Auth\Role;
 
-use App\Events\Backend\Auth\Role\RoleDeleted;
+use GuzzleHttp\Client;
+use App\Models\Role;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Backend\Auth\Role\ManageRoleRequest;
-use App\Http\Requests\Backend\Auth\Role\StoreRoleRequest;
-use App\Http\Requests\Backend\Auth\Role\UpdateRoleRequest;
-use App\Models\Auth\Role;
-use App\Repositories\Backend\Auth\PermissionRepository;
+use App\Events\Backend\Auth\Role\RoleDeleted;
 use App\Repositories\Backend\Auth\RoleRepository;
+use App\Repositories\Backend\Auth\PermissionRepository;
+use App\Http\Requests\Backend\Auth\Role\StoreRoleRequest;
+use App\Http\Requests\Backend\Auth\Role\ManageRoleRequest;
+use App\Http\Requests\Backend\Auth\Role\UpdateRoleRequest;
 
 /**
  * Class RoleController.
  */
 class RoleController extends Controller
 {
-    /**
-     * @var RoleRepository
-     */
-    protected $roleRepository;
-
-    /**
-     * @var PermissionRepository
-     */
-    protected $permissionRepository;
-
-    /**
-     * @param RoleRepository       $roleRepository
-     * @param PermissionRepository $permissionRepository
-     */
-    public function __construct(RoleRepository $roleRepository, PermissionRepository $permissionRepository)
-    {
-        $this->roleRepository = $roleRepository;
-        $this->permissionRepository = $permissionRepository;
-    }
 
     /**
      * @param ManageRoleRequest $request
@@ -43,11 +25,43 @@ class RoleController extends Controller
      */
     public function index(ManageRoleRequest $request)
     {
+
+        $access_token = $this->getAccessToken();
+        
+        $client = new Client(['headers' => [
+            'Authorization' => 'Bearer '. $access_token,
+        ]]);
+
+        //***************** Get All Roles ***************** */
+
+        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/roles';
+
+        $request = $client->get($url);
+
+        $response = json_decode($request->getBody());
+
+        $roles = [];
+
+        foreach($response as $role){
+
+            $role_object = new Role();
+            $role_object->uid = $role->id;
+            $role_object->name = $role->name ;
+            $role_object->description = $role->description ;
+            $role_object->composite = $role->composite ;
+
+            //get number of user for each role
+
+            $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/roles/'. $role_object->name. '/users' ;
+            $request = $client->get($url);
+            $users_response = json_decode($request->getBody());
+            
+            $role_object->nb_users = sizeof($users_response);
+            array_push($roles, $role_object);
+        }
+
         return view('backend.auth.role.index')
-            ->withRoles($this->roleRepository
-            ->with('users', 'permissions')
-            ->orderBy('id')
-            ->paginate());
+            ->withRoles($roles);
     }
 
     /**
@@ -57,8 +71,7 @@ class RoleController extends Controller
      */
     public function create(ManageRoleRequest $request)
     {
-        return view('backend.auth.role.create')
-            ->withPermissions($this->permissionRepository->get());
+        return view('backend.auth.role.create');
     }
 
     /**
@@ -108,22 +121,21 @@ class RoleController extends Controller
         return redirect()->route('admin.auth.role.index')->withFlashSuccess(__('alerts.backend.roles.updated'));
     }
 
-    /**
-     * @param ManageRoleRequest $request
-     * @param Role              $role
-     *
-     * @throws \Exception
-     * @return mixed
-     */
-    public function destroy(ManageRoleRequest $request, Role $role)
+    public function destroy(ManageRoleRequest $roleRequest)
     {
-        if ($role->isAdmin()) {
-            return redirect()->route('admin.auth.role.index')->withFlashDanger(__('exceptions.backend.access.roles.cant_delete_admin'));
-        }
+        $access_token = $this->getAccessToken();
+        
+        $client = new Client(['headers' => [
+            'Authorization' => 'Bearer '. $access_token,
+        ]]);
 
-        $this->roleRepository->deleteById($role->id);
+        //***************** Get All Roles ***************** */
 
-        event(new RoleDeleted($role));
+        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/roles-by-id/'. $roleRequest['uid'];
+
+        $request = $client->delete($url);
+
+        $response = json_decode($request->getStatusCode());
 
         return redirect()->route('admin.auth.role.index')->withFlashSuccess(__('alerts.backend.roles.deleted'));
     }
