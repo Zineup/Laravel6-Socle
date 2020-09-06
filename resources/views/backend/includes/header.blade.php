@@ -48,8 +48,8 @@
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-            <img src="{{ $logged_in_user->picture }}" class="img-avatar" alt="{{ $logged_in_user->email }}">
-            <span class="d-md-down-none">{{ $logged_in_user->full_name }}</span>
+            {{-- <img src="{{ $logged_in_user->picture }}" class="img-avatar" alt="{{ $logged_in_user->email }}"> --}}
+            <span class="d-md-down-none">{{ $logged_in_user->name }}</span>
           </a>
           <div class="dropdown-menu dropdown-menu-right">
             <div class="dropdown-header text-center">
