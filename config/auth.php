@@ -72,7 +72,7 @@ return [
     'providers' => [        
         'users' => [
             'driver' => 'keycloak-users',
-            'model' => Vizir\KeycloakWebGuard\Models\KeycloakUser::class,
+            'model' => App\Models\KeycloakUser::class,
         ],
 
         'session-users' => [
