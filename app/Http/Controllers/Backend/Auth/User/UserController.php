@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Backend\Auth\User;
-
-use GuzzleHttp\Client;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Repositories\Backend\Auth\RoleRepository;
@@ -11,6 +9,7 @@ use App\Repositories\Backend\Auth\PermissionRepository;
 use App\Http\Requests\Backend\Auth\User\StoreUserRequest;
 use App\Http\Requests\Backend\Auth\User\ManageUserRequest;
 use App\Http\Requests\Backend\Auth\User\UpdateUserRequest;
+use Illuminate\Support\Facades\Session;
 
 /**
  * Class UserController.
@@ -22,39 +21,11 @@ class UserController extends Controller
      */
     protected $userRepository;
 
-    /**
-     * UserController constructor.
-     *
-     * @param UserRepository $userRepository
-     */
-    public function __construct(UserRepository $userRepository)
-    {
-        $this->userRepository = $userRepository;
-    }
-
-    /**
-     * @param ManageUserRequest $request
-     *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function index(ManageUserRequest $request)
-    {
-        $access_token = $this->getAccessToken();
-        
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token,
-        ]]);
-
-        //******************* Get Users **************/
-
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users';
-
-        $request = $client->request('GET', $url);
-
-        $response = json_decode($request->getBody());
+    public function init() 
+    {        
+        $response = $this->userRepository->getAllUsers();
 
         $users = [];
-
         foreach($response as $user){
 
             $user_object = new User();
@@ -64,11 +35,47 @@ class UserController extends Controller
             $user_object->first_name = isset($user->firstName) ? $user->firstName : "";
             $user_object->email = isset($user->email) ? $user->email : "";
             $user_object->createdTimestamp = $user->createdTimestamp;
-            $user_object->roles = $this->getUserRoles($user->id, $access_token);
+            $user_object->roles = $this->userRepository->getUserRoles($user->id);
             $user_object->confirmed = $user->emailVerified;
 
             array_push($users, $user_object);
+
         }
+        return $users;
+    }
+
+    /**
+     * UserController constructor.
+     *
+     * @param UserRepository $userRepository
+     */
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+              
+    }
+
+    /**
+     * @param ManageUserRequest $request
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index(ManageUserRequest $request)
+    {   
+        if(session('users') == null || !strpos($request->session()->get('flash_success'), 'created') )
+        {            
+            $request->session()->put('users', $this->init());    
+        }
+
+        if(strpos($request->session()->get('flash_success'), 'created'))
+        {  
+            $index = sizeof(session('users')) + 1;         
+            Session::put('users.'. $index, $request->session()->get('user'));
+        }
+
+       
+        $users = session('users');
+
 
         return view('backend.auth.user.index')->withUsers($users);
     }
@@ -81,10 +88,8 @@ class UserController extends Controller
      * @return mixed
      */
     public function create(ManageUserRequest $request /*, RoleRepository $roleRepository, PermissionRepository $permissionRepository*/)
-    {
-        $access_token = $this->getAccessToken();              
-
-        $roles = $this->getAllRoles($access_token);
+    {         
+        $roles = $this->userRepository->getAllRoles();
 
         return view('backend.auth.user.create')
             ->withRoles($roles);
@@ -98,57 +103,34 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $userRequest)
     {
-        $access_token = $this->getAccessToken();
+        $data = $userRequest->only(
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'password',
+            'active',
+            'confirmed',
+            'roles',
+        );
+
+        $response_header = $this->userRepository->create($data);
         
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token,
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-        ]]);
-
-        //*************** Create a new user **************** */
-
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users';
-
-        $request = $client->request('POST', $url, 
-        [
-            'json' => [
-                'username' => $userRequest['username'],
-                'lastName' => $userRequest['last_name'],
-                'firstName' => $userRequest['first_name'],
-                'email' => $userRequest['email'],
-                'emailVerified' => $userRequest['confirmed'] ? true : false ,
-                'enabled' => true,
-
-                'credentials' => 
-                [[
-                    'type' => 'password',
-                    'value' => $userRequest['password'],
-                    'temporary' => false
-                ]]
-            ] 
-        ]);
-
-        $response_statusCode = $request->getStatusCode();
-        $response_header = $request->getHeader('Location')[0];
-
+        // Get user id from header
         $array_header = explode("/", $response_header);
-
         $user_id = end($array_header);
 
-        //*************** Role Mapping **************** */
+        // Role mapping
+        $this->userRepository->addRemoveUserRoles('POST', $userRequest['roles'], $user_id);
+
+        //Create User
+        $user = $this->createUserObject($user_id, $data);
         
-        if($response_statusCode == 201){
-
-            $response = $this->addRemoveUserRoles($access_token, $client, 'POST', $userRequest['roles'], $user_id);
-
-            if($response != 204){
-                return redirect()->route('admin.auth.user.index')->withFlashDanger('User not created !');
-            }
-        }
-
-        return redirect()->route('admin.auth.user.index')->withFlashSuccess(__('alerts.backend.users.created'));
+        return redirect()->route('admin.auth.user.index')
+            ->withFlashSuccess(__('alerts.backend.users.created'))
+            ->withUser($user);
     }
+
 
     /**        
      *
@@ -156,7 +138,7 @@ class UserController extends Controller
      */
     public function show(ManageUserRequest $request)
     {
-        $user = $this->getUser($request['uid']);        
+        $user = $this->userRepository->getUser($request['uid']);        
 
         return view('backend.auth.user.show')
             ->withUser($user);
@@ -172,10 +154,9 @@ class UserController extends Controller
      */
     public function edit(ManageUserRequest $request, /*RoleRepository $roleRepository, PermissionRepository $permissionRepository,*/ User $user)
     {
-        $access_token = $this->getAccessToken();
-        $user = $this->getUser($request['uid']);
-        $user->roles = $this->getUserRoles($user->uid, $access_token);
-        $roles = $this->getAllRoles($access_token);
+        $user = $this->userRepository->getUser($request['uid']);
+        $user->roles = $this->userRepository->getUserRoles($user->uid);
+        $roles = $this->userRepository->getAllRoles();
 
         return view('backend.auth.user.edit')
             ->withUser($user)
@@ -192,83 +173,25 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $userRequest, User $user)
     {
-        //dd($request['roles']);
-        $access_token = $this->getAccessToken();
-        
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token,
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-            ]]);
+        $response = $this->userRepository->update($userRequest['uid'], $userRequest->only(
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+        ));
 
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users/'. $userRequest['uid'];
+        $this->userRepository->updateUserRoles([
+            'uid' => $userRequest['uid'],
+            'roles' => $userRequest['roles'],
+            'response' => $response,
+        ]);
 
-        $request = $client->request('PUT', $url, 
-        [
-            'json' => [
-                'username' => $userRequest['username'],
-                'firstName' => $userRequest['first_name'],
-                'lastName' => $userRequest['last_name'],
-                'email' => $userRequest['email'],
-            ]
-        ]
-        );
+        $user = $this->userRepository->getUser($userRequest['uid']);
+        $user->roles = $this->userRepository->getUserRoles($userRequest['uid']);
 
-        $response = $request->getStatusCode();
-
-        //******************* Get Roles to add and Roles to remove ******************** */
-
-        $user_roles = $this->getUserRoles($userRequest['uid'], $access_token);
-        $user_roles = json_decode(json_encode ($user_roles), FALSE);
-
-        $test = [];
-        foreach ($user_roles as $role) {
-            array_push($test, $role->id.'/'.$role->name);
-        }
-
-        $roles_to_add = [];
-        $roles_to_remove = [];
-
-        foreach ($userRequest['roles'] as $role) 
-        {
-            if(!in_array($role, $test))
-            {
-                array_push($roles_to_add, $role );
-            }
-        }
-
-        foreach ($test as $role) 
-        {
-            if(!in_array($role, $userRequest['roles']))
-            {
-                array_push($roles_to_remove, $role );
-            }
-        }
-
-        //************* Add Roles ************ */
-
-        if(sizeof($roles_to_add) > 0 AND $response == 204 )
-        {
-            $response = $this->addRemoveUserRoles($access_token, $client, 'POST', $roles_to_add, $userRequest['uid']);
-
-            if($response != 204){
-                return redirect()->route('admin.auth.user.index')->withFlashSuccess('User not updated !');
-            }
-        }
-
-        //************* Remove Roles ************ */
-
-        if(sizeof($roles_to_remove) > 0 AND $response == 204)
-        {
-            $response = $this->addRemoveUserRoles($access_token, $client, 'DELETE', $roles_to_remove, $userRequest['uid']);
-        
-            if($response != 204){
-                return redirect()->route('admin.auth.user.index')->withFlashSuccess('User not updated !');
-            }
-        }
-
-
-        return redirect()->route('admin.auth.user.index')->withFlashSuccess(__('alerts.backend.users.updated'));
+        return redirect()->route('admin.auth.user.index')
+            ->withFlashSuccess(__('alerts.backend.users.updated'))
+            ->withUser($user);
     }
 
     /**
@@ -277,152 +200,29 @@ class UserController extends Controller
      * @return mixed
      */
     public function destroy(ManageUserRequest $userRequest)
-    {
-        $access_token = $this->getAccessToken();
-        
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token,
-        ]]);
-
-        //******************* DELETE User **************/
-
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users/'. $userRequest['uid'];
-
-        $request = $client->request('DELETE', $url);
-
-        $response = $request->getStatusCode();
-
-        if($response != 204 ){
-
-            return redirect()->route('admin.auth.user.index')->withFlashDanger('User not deleted !');
-        }
+    {        
+        $this->userRepository->delete($userRequest['uid']);
 
         return redirect()->route('admin.auth.user.index')->withFlashSuccess(__('alerts.backend.users.deleted'));
     }
 
-    /**
-     * @param String  $uid
+    
+    /**        
      *
-     * @return User
+     * @return mixed
      */
-
-    public function getUser(String $uid)
+    public function createUserObject($user_id, array $data)
     {
-        $access_token = $this->getAccessToken();
-        
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token,
-        ]]);
-
-        //******************* Get User **************/
-
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users/'. $uid;
-
-        $request = $client->request('GET', $url);
-
-        $response = json_decode($request->getBody());
-
         $user = new User();
-
-        $user->uid = $response->id;
-        $user->username = $response->username;
-        $user->last_name = isset($response->lastName) ? $response->lastName : "";
-        $user->first_name = isset($response->firstName) ? $response->firstName : "";
-        $user->email =  isset($response->email) ? $response->email : "";
-        $user->confirmed = $response->emailVerified;
-        $user->createdTimestamp =  $response->createdTimestamp;
+        $user->uid = $user_id;
+        $user->last_name = $data['last_name'];
+        $user->first_name = $data['first_name'];
+        $user->email = $data['email'];
+        $user->createdTimestamp = now()->diffForHumans();
+        $user->roles = $this->userRepository->formatRoles($data['roles']);
+        $user->confirmed =  $data['confirmed'];
 
         return $user;
-
-    }       
-
-    public function getUserRoles(String $uid, String $access_token)
-    {        
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token,
-        ]]);
-
-        //******************* Get User **************/
-
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users/' .$uid .'/role-mappings';
-
-        $request = $client->request('GET', $url);
-   
-        $response = json_decode($request->getBody())->realmMappings;
-        
-        $roles = [];        
-        
-        foreach ($response as $role) {
-
-            if($role->name != 'offline_access' AND $role->name != 'uma_authorization')
-            {              
-                $role_element['id'] = $role->id;
-                $role_element['name'] = $role->name;
-                array_push($roles, $role_element);                
-            }
-                       
-        }          
-
-        return $roles;
-    }
-
-    public function getAllRoles(String $access_token)
-    {                
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token
-        ]]);
-
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/roles';
-
-        $request = $client->get( $url);
-
-        $response = json_decode($request->getBody());
-        $roles = [];
-
-        foreach ($response as $role) {
-               
-            if($role->name != 'offline_access' AND $role->name != 'uma_authorization')
-            {              
-                $role_element['id'] = $role->id;
-                $role_element['name'] = $role->name;
-                array_push($roles, $role_element);                
-            }
-        }
-
-        $roles = json_decode(json_encode ($roles), FALSE);
-
-        return $roles;
-    }
-
-
-    public function addRemoveUserRoles(String $access_token, $client, String $verb, $roles, $user_id)
-    {
-        $json_array = [];
-
-        foreach($roles as $role){
-
-            $array = explode("/", $role);
-            $role_id = $array[0];
-            $role_name = $array[1];
-
-            array_push( $json_array,
-                [
-                    'id' => $role_id,
-                    'name' =>$role_name
-                ] 
-            );
-        }
-
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users/'. $user_id.'/role-mappings/realm';
-
-        $request = $client->request($verb, $url, 
-        [
-            'json' => $json_array
-        ]);
-        
-        $response = $request->getStatusCode();
-
-        return $response;
 
     }
 
