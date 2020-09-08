@@ -1,15 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Backend\Auth\User;
+
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 use App\Repositories\Backend\Auth\RoleRepository;
 use App\Repositories\Backend\Auth\UserRepository;
 use App\Repositories\Backend\Auth\PermissionRepository;
 use App\Http\Requests\Backend\Auth\User\StoreUserRequest;
 use App\Http\Requests\Backend\Auth\User\ManageUserRequest;
 use App\Http\Requests\Backend\Auth\User\UpdateUserRequest;
-use Illuminate\Support\Facades\Session;
 
 /**
  * Class UserController.
@@ -21,26 +22,25 @@ class UserController extends Controller
      */
     protected $userRepository;
 
-    public function init() 
-    {        
+    public function init()
+    {
         $response = $this->userRepository->getAllUsers();
 
         $users = [];
-        foreach($response as $user){
-
+        foreach ($response as $user) {
             $user_object = new User();
 
             $user_object->uid = $user->id;
-            $user_object->last_name = isset($user->lastName) ? $user->lastName : "";
-            $user_object->first_name = isset($user->firstName) ? $user->firstName : "";
-            $user_object->email = isset($user->email) ? $user->email : "";
+            $user_object->last_name = isset($user->lastName) ? $user->lastName : '';
+            $user_object->first_name = isset($user->firstName) ? $user->firstName : '';
+            $user_object->email = isset($user->email) ? $user->email : '';
             $user_object->createdTimestamp = $user->createdTimestamp;
             $user_object->roles = $this->userRepository->getUserRoles($user->id);
             $user_object->confirmed = $user->emailVerified;
 
             array_push($users, $user_object);
-
         }
+
         return $users;
     }
 
@@ -52,7 +52,6 @@ class UserController extends Controller
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
-              
     }
 
     /**
@@ -61,21 +60,17 @@ class UserController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(ManageUserRequest $request)
-    {   
-        if(session('users') == null || !strpos($request->session()->get('flash_success'), 'created') )
-        {            
-            $request->session()->put('users', $this->init());    
+    {
+        if (session('users') == null || ! strpos($request->session()->get('flash_success'), 'created')) {
+            $request->session()->put('users', $this->init());
         }
 
-        if(strpos($request->session()->get('flash_success'), 'created'))
-        {  
-            $index = sizeof(session('users')) + 1;         
-            Session::put('users.'. $index, $request->session()->get('user'));
+        if (strpos($request->session()->get('flash_success'), 'created')) {
+            $index = count(session('users')) + 1;
+            Session::put('users.'.$index, $request->session()->get('user'));
         }
 
-       
         $users = session('users');
-
 
         return view('backend.auth.user.index')->withUsers($users);
     }
@@ -88,7 +83,7 @@ class UserController extends Controller
      * @return mixed
      */
     public function create(ManageUserRequest $request /*, RoleRepository $roleRepository, PermissionRepository $permissionRepository*/)
-    {         
+    {
         $roles = $this->userRepository->getAllRoles();
 
         return view('backend.auth.user.create')
@@ -115,9 +110,9 @@ class UserController extends Controller
         );
 
         $response_header = $this->userRepository->create($data);
-        
+
         // Get user id from header
-        $array_header = explode("/", $response_header);
+        $array_header = explode('/', $response_header);
         $user_id = end($array_header);
 
         // Role mapping
@@ -125,20 +120,18 @@ class UserController extends Controller
 
         //Create User
         $user = $this->createUserObject($user_id, $data);
-        
+
         return redirect()->route('admin.auth.user.index')
             ->withFlashSuccess(__('alerts.backend.users.created'))
             ->withUser($user);
     }
 
-
-    /**        
-     *
+    /**
      * @return mixed
      */
     public function show(ManageUserRequest $request)
     {
-        $user = $this->userRepository->getUser($request['uid']);        
+        $user = $this->userRepository->getUser($request['uid']);
 
         return view('backend.auth.user.show')
             ->withUser($user);
@@ -200,15 +193,13 @@ class UserController extends Controller
      * @return mixed
      */
     public function destroy(ManageUserRequest $userRequest)
-    {        
+    {
         $this->userRepository->delete($userRequest['uid']);
 
         return redirect()->route('admin.auth.user.index')->withFlashSuccess(__('alerts.backend.users.deleted'));
     }
 
-    
-    /**        
-     *
+    /**
      * @return mixed
      */
     public function createUserObject($user_id, array $data)
@@ -220,11 +211,8 @@ class UserController extends Controller
         $user->email = $data['email'];
         $user->createdTimestamp = now()->diffForHumans();
         $user->roles = $this->userRepository->formatRoles($data['roles']);
-        $user->confirmed =  $data['confirmed'];
+        $user->confirmed = $data['confirmed'];
 
         return $user;
-
     }
-
-    
 }

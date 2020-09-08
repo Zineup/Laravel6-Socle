@@ -15,11 +15,12 @@ class KeycloakUser implements Authenticatable
      */
     protected $fillable = [
         'sub',
+        'username',
         'name',
         'email',
         'first_name',
         'last_name',
-        'createdTimestamp',
+        'created_at',
         'password'
     ];
 
@@ -157,7 +158,7 @@ class KeycloakUser implements Authenticatable
 
     public function getCreatedAt()
     {
-        $timestamp = substr($this->createdTimestamp, 0, -3);
+        $timestamp = substr($this->created_at, 0, -3);
         return Carbon::createFromTimestamp($timestamp);        
     }
 }

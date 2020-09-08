@@ -67,6 +67,7 @@ Route::group([
         Route::post('role', [RoleController::class, 'store'])->name('role.store');
 
         Route::group(['prefix' => 'role/{uid}'], function () {
+            Route::get('/', [RoleController::class, 'show'])->name('role.show');
             Route::get('edit', [RoleController::class, 'edit'])->name('role.edit');
             Route::patch('/', [RoleController::class, 'update'])->name('role.update');
             Route::delete('/', [RoleController::class, 'destroy'])->name('role.destroy');

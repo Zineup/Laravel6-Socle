@@ -36,33 +36,13 @@ class ProfileController extends Controller
      */
     public function update(UpdateProfileRequest $request)
     {
-        $access_token = $this->getAccessToken();
-        $id = Auth::user()->sub;
-        
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token,
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-            ]]);
+        $user_id = Auth::user()->sub;
 
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users/'. $id;
-
-        $request = $client->request('PUT', $url, 
-        [
-            'json' => [
-                'firstName' => $request['first_name'],
-                'lastName' => $request['last_name'],
-                'email' => $request['email'],
-            ]
-        ]
-        );
-
-        $response = $request->getStatusCode();
-
-        if($response != 204){
-
-            return redirect()->route('frontend.user.account')->withFlashDanger(__('strings.frontend.user.profile_updated'));
-        }
+        $response = $this->userRepository->updateUser($user_id, $request->only(
+            'first_name',
+            'last_name',
+            'email'
+        ));
 
         return redirect()->route('frontend.user.account')->withFlashSuccess(__('strings.frontend.user.profile_updated'));
     }

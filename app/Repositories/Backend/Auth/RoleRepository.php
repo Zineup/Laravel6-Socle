@@ -2,120 +2,128 @@
 
 namespace App\Repositories\Backend\Auth;
 
-use App\Events\Backend\Auth\Role\RoleCreated;
-use App\Events\Backend\Auth\Role\RoleUpdated;
-use App\Exceptions\GeneralException;
-use App\Models\Auth\Role;
+use GuzzleHttp\Client;
+use App\Models\Role;
 use App\Repositories\BaseRepository;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class RoleRepository.
  */
 class RoleRepository extends BaseRepository
 {
+    private $access_token;
+    private $client;
+
     /**
      * RoleRepository constructor.
      *
      * @param  Role  $model
      */
-    public function __construct(Role $model)
+    public function __construct()
     {
-        $this->model = $model;
+        $this->access_token = $this->getAccessToken();
+        $this->client = new Client(['headers' => [
+            'Authorization' => 'Bearer '.$this->access_token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ]]);
     }
 
-    /**
-     * @param array $data
-     *
-     * @throws GeneralException
-     * @throws \Throwable
-     * @return Role
-     */
-    public function create(array $data): Role
-    {
-        // Make sure it doesn't already exist
-        if ($this->roleExists($data['name'])) {
-            throw new GeneralException('A role already exists with the name '.e($data['name']));
-        }
+    public function getAccessToken(){
 
-        if (! isset($data['permissions']) || ! \count($data['permissions'])) {
-            $data['permissions'] = [];
-        }
+        $client = new \GuzzleHttp\Client();
 
-        //See if the role must contain a permission as per config
-        if (config('access.roles.role_must_contain_permission') && \count($data['permissions']) === 0) {
-            throw new GeneralException(__('exceptions.backend.access.roles.needs_permission'));
-        }
+        $url = config('keycloak-web.base_url'). '/realms/master/protocol/openid-connect/token';
 
-        return DB::transaction(function () use ($data) {
-            $role = $this->model::create(['name' => strtolower($data['name'])]);
+        $my_body = [
+            "username" => "admin",
+            "password" => "admin",
+            "grant_type" => "password",
+            "client_id" => "admin-cli"
+        ];
 
-            if ($role) {
-                $role->givePermissionTo($data['permissions']);
+        $request = $client->post(
+            $url, 
+            [ 'form_params' => $my_body ]
+        );
 
-                event(new RoleCreated($role));
+        $response = json_decode($request->getBody())->access_token;
 
-                return $role;
-            }
-
-            throw new GeneralException(trans('exceptions.backend.access.roles.create_error'));
-        });
+        return $response;
     }
 
-    /**
-     * @param Role  $role
-     * @param array $data
-     *
-     * @throws GeneralException
-     * @throws \Throwable
-     * @return mixed
-     */
-    public function update(Role $role, array $data)
+    public function getAllRoles()
     {
-        if ($role->isAdmin()) {
-            throw new GeneralException('You can not edit the administrator role.');
+        $url = config('keycloak-web.base_url'). '/admin/realms/'. config('keycloak-web.realm'). '/roles';
+
+        $request = $this->client->get($url);
+
+        $response = json_decode($request->getBody());
+
+        $roles = [];
+
+        foreach($response as $role){
+
+            $role_object = new Role();
+            $role_object->uid = $role->id;
+            $role_object->name = $role->name ;
+            $role_object->description = isset($role->description) ? $role->description : '' ;
+            $role_object->composite = $role->composite ;
+
+            //get number of user for each role
+
+            $url = config('keycloak-web.base_url'). '/admin/realms/'. config('keycloak-web.realm'). '/roles/'. $role_object->name. '/users' ;
+            $request = $this->client->get($url);
+            $users_response = json_decode($request->getBody());
+            
+            $role_object->nb_users = sizeof($users_response);
+            array_push($roles, $role_object);
         }
 
-        // If the name is changing make sure it doesn't already exist
-        if ($role->name !== strtolower($data['name'])) {
-            if ($this->roleExists($data['name'])) {
-                throw new GeneralException('A role already exists with the name '.$data['name']);
-            }
-        }
-
-        if (! isset($data['permissions']) || ! \count($data['permissions'])) {
-            $data['permissions'] = [];
-        }
-
-        //See if the role must contain a permission as per config
-        if (config('access.roles.role_must_contain_permission') && \count($data['permissions']) === 0) {
-            throw new GeneralException(__('exceptions.backend.access.roles.needs_permission'));
-        }
-
-        return DB::transaction(function () use ($role, $data) {
-            if ($role->update([
-                'name' => strtolower($data['name']),
-            ])) {
-                $role->syncPermissions($data['permissions']);
-
-                event(new RoleUpdated($role));
-
-                return $role;
-            }
-
-            throw new GeneralException(trans('exceptions.backend.access.roles.update_error'));
-        });
+        return $roles;
     }
 
-    /**
-     * @param $name
-     *
-     * @return bool
-     */
-    protected function roleExists($name): bool
+    
+    public function getRole($role_id)
     {
-        return $this->model
-            ->where('name', strtolower($name))
-            ->count() > 0;
+        $url = config('keycloak-web.base_url'). '/admin/realms/'. config('keycloak-web.realm'). '/roles-by-id/'. $role_id;
+
+        $request = $this->client->request('GET', $url);
+
+        $response = json_decode($request->getBody());
+
+        $role = new Role();
+
+        $role->uid = $response->id;
+        $role->name = $response->name;
+        $role->description = $response->description;
+        $role->composite = $response->composite;
+
+        return $role;
+    }
+
+
+    public function create(array $data)
+    {
+        $url = config('keycloak-web.base_url'). '/admin/realms/'. config('keycloak-web.realm'). '/roles';
+        $request = $this->client->post($url, [
+            'json' => [
+                'name' => $data['name'],
+                'description' => $data['description']
+            ]
+        ]);
+
+        $response = $request->getStatusCode();
+
+        return $response;
+    }
+
+    public function deleteRole($role_id)
+    {
+        $url = config('keycloak-web.base_url'). '/admin/realms/'. config('keycloak-web.realm'). '/roles-by-id/'. $role_id;
+
+        $request = $this->client->delete($url);
+
+        return json_decode($request->getStatusCode());
     }
 }

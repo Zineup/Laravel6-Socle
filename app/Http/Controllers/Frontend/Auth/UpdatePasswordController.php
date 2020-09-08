@@ -36,36 +36,10 @@ class UpdatePasswordController extends Controller
      */
     public function update(UpdatePasswordRequest $userRequest)
     {
-        $access_token = $this->getAccessToken();
-        $id = Auth::user()->sub;
-        
-        $client = new Client(['headers' => [
-            'Authorization' => 'Bearer '. $access_token,
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json'
-            ]]);
-
-        $url = 'http://localhost:8080/auth/admin/realms/Demo-Realm/users/'. $id;
-
-        $request = $client->request('PUT', $url, 
-        [
-            'json' => [
-
-                'credentials' => 
-                [[
-                    'type' => 'password',
-                    'value' => $userRequest['password'],
-                    'temporary' => false
-                ]]
-            ] 
+        $this->userRepository->updatePassword([
+            'id' => Auth::user()->sub,
+            'password' => $userRequest['password']
         ]);
-
-        $response = $request->getStatusCode();
-
-        if($response != 204){
-
-            return redirect()->route('frontend.user.account')->withFlashDanger('User password not updated');
-        }
 
         return redirect()->route('frontend.user.account')->withFlashSuccess(__('strings.frontend.user.password_updated'));
     }
