@@ -41,9 +41,6 @@
             <span> {{ $city->country }} </span>
         </div>
     </div><br>
-
-
-</div>
  
 </form>
 @endsection

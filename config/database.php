@@ -91,6 +91,12 @@ return [
             'prefix_indexes' => true,
         ],
 
+        'mysql_testing' => [
+            'driver'   => 'mysql',
+            'database' => ':memory:',
+            'prefix'   => '',
+        ],
+
     ],
 
     /*

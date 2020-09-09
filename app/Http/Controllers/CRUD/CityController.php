@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers\CRUD;
 
+use App\Models\CRUD\City;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CRUD\StoreCityRequest;
-use App\Models\CRUD\City;
-use Illuminate\Http\Request;
-use Redirect;
-use View;
 
 class CityController extends Controller
 {
@@ -19,8 +16,9 @@ class CityController extends Controller
     public function index()
     {
         $cities = City::all();
-        return View('crud.city.list')
-        ->withCities($cities);
+
+        return view('crud.city.list')
+            ->withCities($cities);
     }
 
     /**
@@ -30,7 +28,7 @@ class CityController extends Controller
      */
     public function create()
     {
-        return View('crud.city.create');
+        return view('crud.city.create');
     }
 
     /**
@@ -42,61 +40,56 @@ class CityController extends Controller
     public function store(StoreCityRequest $request)
     {
         City::create($request->all());
-    
+
         return Redirect()->route('city.index')
-       ->with('success','City created successfully !');
+            ->with('success', 'City created successfully !');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param City $city
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(City $city)
     {
-        $condition = array('id' => $id);
-        $city = City::where($condition)->firstOrFail();
- 
         return view('crud.city.show')
-        ->withCity($city);
+            ->withCity($city);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param City $city
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {        
-        $condition = array('id' => $id);
-        $city = City::where($condition)->firstOrFail();
- 
+    public function edit(City $city)
+    {
         return view('crud.city.edit')
-        ->withCity($city);
+            ->withCity($city);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(StoreCityRequest $request, $id)
-    {             
+    {
         $update = [
-            'name' => $request->name, 
+            'name' => $request->name,
             'population' => $request->population,
             'postal_code' => $request->postal_code,
             'region' => $request->region,
-            'country' => $request->country
+            'country' => $request->country,
         ];
-        City::where('id',$id)->update($update);
-   
+
+        City::where('id', $id)->update($update);
+
         return Redirect()->route('city.index')
-       ->with('success','City updated successfully !');
+            ->with('success', 'City updated successfully !');
     }
 
     /**
@@ -107,10 +100,9 @@ class CityController extends Controller
      */
     public function destroy($id)
     {
-        City::where('id',$id)->delete();
-   
+        City::where('id', $id)->delete();
+
         return Redirect()->route('city.index')
-        ->with('success','City deleted successfully !');
-  
+            ->with('success', 'City deleted successfully !');
     }
 }
