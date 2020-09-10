@@ -1,4 +1,9 @@
-# SOCLE - Laravel 6
+# SOCLE - Laravel 6      
+
+     
+**PHP:** ^7.2      
+**Laravel:** ^6.3
+
 
 ## Sommaire
 1. [À propos](#à-propos)
