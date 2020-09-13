@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Requests\CRUD;
+namespace App\Http\Requests\Frontend\CRUD;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreCityRequest extends FormRequest
 {
@@ -25,7 +24,7 @@ class StoreCityRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' =>  ['required', 'min:3', 'max:30'],
+            'name' => ['required', 'min:3', 'max:30'],
             'postal_code' => ['required', 'min:3', 'max:10'],
             'population' => ['required', 'integer', 'max:1000000000', 'min:500'],
             'region' => ['required', 'min:3', 'max:30'],

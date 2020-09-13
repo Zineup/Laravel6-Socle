@@ -37,7 +37,12 @@
         <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="CACHE_DRIVER" value="array"/>
         <server name="CONTACT_CAPTCHA_STATUS" value="false"/>
-        <server name="DB_DEFAULT" value="mysql_testing" />
+        <server name="DB_CONNECTION" value="mysql"/>
+        <server name="DB_HOST" value="localhost"/>
+        <server name="DB_PORT" value="3306"/>
+        <server name="DB_DATABASE" value="socle_laravel_testing"/>
+        <server name="DB_USERNAME" value="root"/>
+        <server name="DB_PASSWORD" value=""/>
         <server name="ENABLE_REGISTRATION" value="true"/>
         <server name="LOGIN_CAPTCHA_STATUS" value="false"/>
         <server name="MAIL_DRIVER" value="array"/>

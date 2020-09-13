@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Feature\CRUD;
+namespace Tests\Feature\Frontend\CRUD;
 
 use Tests\TestCase;
 use App\Models\Auth\User;
 use App\Models\CRUD\City;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CityTest extends TestCase
+class CrudCityTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -82,9 +82,9 @@ class CityTest extends TestCase
 
         $this->post('/city', $this->getArrayToPost($city))
             ->assertStatus(302)
-            ->assertSessionHas('success');
+            ->assertSessionHas('flash_success');
 
-        $this->assertSame(session('success'), 'City created successfully !');
+        $this->assertSame(session('flash_success'), 'City was successfully created.');
     }
 
     /**
@@ -96,11 +96,11 @@ class CityTest extends TestCase
         $cityForUpdate = factory(City::class)->make();
         $this->callUrl('/city/{$city->id}/edit');
 
-        $this->put('/city/{$city->id}', $this->getArrayToPost($cityForUpdate))
+        $this->patch("/city/{$city->id}", $this->getArrayToPost($cityForUpdate))
             ->assertStatus(302)
-            ->assertSessionHas('success');
+            ->assertSessionHas('flash_success');
 
-        $this->assertSame(session('success'), 'City updated successfully !');
+        $this->assertSame(session('flash_success'), 'City was successfully updated.');
     }
 
     /**
@@ -113,9 +113,9 @@ class CityTest extends TestCase
 
         $this->delete('/city/{$city->id}', ['_token' => csrf_token()])
             ->assertStatus(302)
-            ->assertSessionHas('success');
+            ->assertSessionHas('flash_success');
 
-        $this->assertSame(session('success'), 'City deleted successfully !');
+        $this->assertSame(session('flash_success'), 'City was successfully deleted.');
     }
 
     /**
