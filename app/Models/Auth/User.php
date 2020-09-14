@@ -12,8 +12,5 @@ use App\Models\Auth\Traits\Scope\UserScope;
  */
 class User extends BaseUser
 {
-    use UserAttribute,
-        UserMethod,
-        UserRelationship,
-        UserScope;
+    //
 }

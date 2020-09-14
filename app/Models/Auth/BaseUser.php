@@ -23,9 +23,7 @@ abstract class BaseUser extends Authenticatable implements Recordable
         Impersonate,
         Notifiable,
         RecordableTrait,
-        SendUserPasswordReset,
-        SoftDeletes,
-        Uuid;
+        SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
