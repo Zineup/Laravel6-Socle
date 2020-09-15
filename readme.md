@@ -25,7 +25,7 @@ cd Laravel6-Socle
 #### 3. Accéder à la branche 
 
 ```bash
-git checkout DockerizeSocle
+git checkout feature-DockerizeSocle
 ```
 
 #### 4. Créer le fichier .env
