@@ -15,11 +15,11 @@ class KeycloakUser implements Authenticatable
      */
     protected $fillable = [
         'sub',
-        'username',
+        'preferred_username',
         'name',
         'email',
-        'first_name',
-        'last_name',
+        'given_name',
+        'family_name',
         'created_at',
         'password'
     ];
@@ -154,6 +154,16 @@ class KeycloakUser implements Authenticatable
     public function isImpersonated()
     {
         return false;
+    }
+
+    public function hasCreatedAt()
+    {
+        if($this->created_at == null)
+        {
+            return false;
+        }
+        
+        return true;
     }
 
     public function getCreatedAt()

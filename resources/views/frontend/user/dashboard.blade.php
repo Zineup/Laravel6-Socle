@@ -16,8 +16,7 @@
                     <div class="row">
                         <div class="col col-sm-4 order-1 order-sm-2  mb-4">
                             <div class="card mb-4 bg-light">
-                                <img class="card-img-top" src="{{ $logged_in_user->picture }}" alt="Profile Picture">
-
+                                
                                 <div class="card-body">
                                     <h4 class="card-title">
                                         {{ $logged_in_user->name }}<br/>
@@ -26,7 +25,9 @@
                                     <p class="card-text">
                                         <small>
                                             <i class="fas fa-envelope"></i> {{ $logged_in_user->email }}<br/>
-                                            <i class="fas fa-calendar-check"></i> @lang('strings.frontend.general.joined') {{ timezone()->convertToLocal($logged_in_user->getCreatedAt(), 'F jS, Y') }}
+                                            @if ($logged_in_user->hasCreatedAt())
+                                                <i class="fas fa-calendar-check"></i> @lang('strings.frontend.general.joined') {{ timezone()->convertToLocal($logged_in_user->getCreatedAt(), 'F jS, Y') }}
+                                            @endif
                                         </small>
                                     </p>
 

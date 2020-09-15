@@ -34,7 +34,7 @@
                             <th>@lang('labels.backend.access.users.table.roles')</th>
                             <th>@lang('labels.backend.access.users.table.other_permissions')</th>
                             <th>@lang('labels.backend.access.users.table.social')</th>
-                            <th>@lang('labels.backend.access.users.table.last_updated')</th>
+                            <th>Created At</th>
                             <th>@lang('labels.general.actions')</th>
                         </tr>
                         </thead>
