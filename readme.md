@@ -1,46 +1,35 @@
-## Laravel Boilerplate (Current: Laravel 6.*) ([Demo](https://demo.laravel-boilerplate.com))
-
-[![Latest Stable Version](https://poser.pugx.org/rappasoft/laravel-boilerplate/v/stable)](https://packagist.org/packages/rappasoft/laravel-boilerplate)
-[![Latest Unstable Version](https://poser.pugx.org/rappasoft/laravel-boilerplate/v/unstable)](https://packagist.org/packages/rappasoft/laravel-boilerplate) 
-<br/>
-[![StyleCI](https://styleci.io/repos/30171828/shield?style=plastic)](https://github.styleci.io/repos/30171828)
-<br/>
-![GitHub contributors](https://img.shields.io/github/contributors/rappasoft/laravel-boilerplate.svg)
-![GitHub stars](https://img.shields.io/github/stars/rappasoft/laravel-boilerplate.svg?style=social)
+# SOCLE - Laravel 6   
 
 ### Demo Credentials
 
-**User:** admin@admin.com  
+**User:** user@user.com  
 **Password:** secret
 
-### Official Documentation
 
-[Click here for the official documentation](http://laravel-boilerplate.com)
+### CRUD Basic
 
-### Slack Channel
+- Le projet est livré avec un CRUD Basic pour le model ``City``.
 
-Please join us in our Slack channel to get faster responses to your questions. Get your invite here: https://laravel-boilerplate.herokuapp.com
+#### Contrôleur :
 
-### Introduction
+- Le contrôleur ``CityController`` se trouve sur l'emplacement ``app\Http\Controllers\Frontend\CRUD``, il contient les 7 méthodes du CRUD (index, create, store, show, edit, update et delete) qui utilisent la classe ``StoreCityRequest`` injectée pour valider et agir comme un deuxième contrôle de sécurité après le middleware.
 
-Laravel Boilerplate provides you with a massive head start on any size web application. It comes with a full featured access control system out of the box with an easy to learn API and is built on a Bootstrap foundation with a front and backend architecture. We have put a lot of work into it and we hope it serves you well and saves you time!
+- le contrôleur utilise la classe ``CityRepository`` injectée qui se trouve sur l'emplacement ``app\Repositories\Frontend\CRUD``
 
-### Issues
+#### Vues :
 
-If you come across any issues please [report them here](https://github.com/rappasoft/laravel-boilerplate/issues).
+- le CRUD est accompagné avec des vues qui facilitent la manipulation des données du model ``City``. ces vues se trouvent sur l'emplacement ``resources\views\frontend\crud``
 
-### Contributing
+#### Tests :
+ 
+- Sur l'emplacement ``tests\Feature\Frontend\CRUD``, vous trouverer la classe ``CityTest`` pour tester les méthodes CRUD du contrôleur.
 
-Thank you for considering contributing to the Laravel Boilerplate project! Please feel free to make any pull requests, or e-mail me a feature request you would like to see in the future to Anthony Rappa at rappa819@gmail.com.
+- vous pouvez lancer le test avec la commande :
 
-### Security Vulnerabilities
+```bash
+vendor\bin\phpunit.bat tests\Feature\Frontend\CRUD\CityTest.php
+```
 
-If you discover a security vulnerability within this boilerplate, please send an e-mail to Anthony Rappa at rappa819@gmail.com, or create a pull request if possible. All security vulnerabilities will be promptly addressed.
+#### Route :
 
-### Donations
-
-If you would like to help the continued efforts of this project, any size [donations](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JJWUZ4E9S9SFG&lc=US&item_name=Laravel%205%20Boilerplate&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) are welcomed and highly appreciated.
-
-### License
-
-MIT: [http://anthony.mit-license.org](http://anthony.mit-license.org)
+- Après l'authentification, vous pouvez utiliser la route ``localhost:port/city`` pour accéder à la page index du CRUD City.
