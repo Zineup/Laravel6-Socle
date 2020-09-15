@@ -1,8 +1,9 @@
 # SOCLE - Laravel 6      
 
+## Exigences :
      
-**PHP:** ^7.2      
-**Laravel:** ^6.3
+ - PHP: >= 7.2      
+ - Laravel: 6.3
 
 
 ## Sommaire
@@ -10,6 +11,7 @@
 2. [Fonctionnalités](#fonctionnalités)
     1. [CRUD Basic](#crud-basic)
     2. [Authentification Tierce](#authentification-tierce)
+    3. [Docker - Jenkins](#docker---jenkins)
 3. [Installation](#installation)
 4. [Autre](#autre)
 
@@ -23,24 +25,7 @@ Il suffit de cloner le socle et le considérer comme un projet de départ.
 ### CRUD Basic
 
 - Le projet est livré avec un CRUD Basic pour le model ``City``.
-
-#### Contrôleur :
-
-- Le contrôleur ``CityController`` se trouve sur l'emplacement ``app\Http\Controllers\CRUD``, il contient les 7 méthodes du CRUD (index, create, store, show, edit, update et delete) qui utilisent la classe ``StoreCityRequest`` injectée pour valider et agir comme un deuxième contrôle de sécurité après le middleware.
-
-#### Vues :
-
-- le CRUD est accompagné avec des vues qui facilitent la manipulation des données du model ``City``. ces vues se trouvent sur l'emplacement ``resources\views\crud``
-
-#### Tests :
- 
-- Sur l'emplacement ``tests\Feature\CRUD``, vous trouverer la classe ``CityTest`` pour tester les méthodes CRUD du contrôleur.
-
-- vous pouvez lancer le test avec la commande :
-
-```bash
-vendor\bin\phpunit.bat tests\Feature\CRUD\CityTest.php
-```
+- Pour plus de détails et pour activer cette fonctionnalité, vous devez accéder à la branche ``feature-CrudBasics``.
 
 ### Authentification Tierce
 
@@ -66,6 +51,13 @@ FACEBOOK_ACTIVE=true
 
 - Keycloak offre une API Rest pour gérer la partie administration et propose une console d’administration pour la gestion centralisée des utilisateurs.
 
+### Docker - Jenkins
+
+- Le socle est livré avec son environnement de développement grâce à l'utilisation du docker.
+
+- Vous pouvez aussi lancer le build et les tests du socle automatiquement à l'aide de Pipeline de Jenkins pour tester le socle.
+
+- Visiter la branche : ``feature-DockerizeSocle``
 
 ## Installation 
 
@@ -75,6 +67,10 @@ FACEBOOK_ACTIVE=true
 git clone https://github.com/Zineup/Laravel6-Socle.git
 ```
 Après, vous devez se positionner dans le répértoire du projet.
+
+```bash
+cd Laravel6-Socle
+```
 
 ### 2. Fichier d'environnement
 
@@ -152,11 +148,7 @@ Les commandes disponibles sont répertoriées en haut du fichier package.json so
 ### 8. PHPUnit
 
 Exécuter la suite de tests pour vous assurer que toutes les parties fonctionnent correctement.
-
-```bash
-phpunit
-```
-ou bien 
+ 
 ```bash
 vendor\bin\phpunit.bat
 ```
