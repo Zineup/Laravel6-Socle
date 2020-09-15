@@ -1,46 +1,75 @@
-## Laravel Boilerplate (Current: Laravel 6.*) ([Demo](https://demo.laravel-boilerplate.com))
+# SOCLE - Laravel 6   
 
-[![Latest Stable Version](https://poser.pugx.org/rappasoft/laravel-boilerplate/v/stable)](https://packagist.org/packages/rappasoft/laravel-boilerplate)
-[![Latest Unstable Version](https://poser.pugx.org/rappasoft/laravel-boilerplate/v/unstable)](https://packagist.org/packages/rappasoft/laravel-boilerplate) 
-<br/>
-[![StyleCI](https://styleci.io/repos/30171828/shield?style=plastic)](https://github.styleci.io/repos/30171828)
-<br/>
-![GitHub contributors](https://img.shields.io/github/contributors/rappasoft/laravel-boilerplate.svg)
-![GitHub stars](https://img.shields.io/github/stars/rappasoft/laravel-boilerplate.svg?style=social)
+## Serveur Keycloak
 
-### Demo Credentials
+- Le serveur est utilisé dans le socle pour mettre en place un système d’authentification robuste qui gère les autorisations et donc sécuriser l'application.
 
-**User:** admin@admin.com  
-**Password:** secret
+- Keycloak offre une API Rest pour gérer la partie administration et propose une console d’administration pour la gestion centralisée des utilisateurs.
 
-### Official Documentation
+## Configuration de Serveur
 
-[Click here for the official documentation](http://laravel-boilerplate.com)
+### Roles :
 
-### Slack Channel
+- Après avoir installé le serveur et créé un Realm personnalisé, vous devez créer des rôles sur votre Realm qui seront globaux pour tous les clients.
+- Ces rôles doivent être composites pour qu'ils soient composés par les rôles des clients qui expriment la même chose.
+- par exemple :
+    - Créer un rôle ``admin`` pour le client utilisé dans le projet
+    - Créer un rôle global pour le Realm ``app-admin``
+    - Modifier le rôle pour qu'il soit composite
+    - Ajouter le rôle ``admin`` du client dans le rôle ``app-admin`` du Realm
+    
+### Propriété created_at :
 
-Please join us in our Slack channel to get faster responses to your questions. Get your invite here: https://laravel-boilerplate.herokuapp.com
+- Par défaut, le serveur n'intègre pas la propriété ``created_at`` avec les propriétés des utilisateurs, donc vous devez la configurer manuellement, et vous trouverez que le projet l'utilise déjà pour afficher plus de détails sur les utilisateurs
 
-### Introduction
+### Installation
 
-Laravel Boilerplate provides you with a massive head start on any size web application. It comes with a full featured access control system out of the box with an easy to learn API and is built on a Bootstrap foundation with a front and backend architecture. We have put a lot of work into it and we hope it serves you well and saves you time!
+#### 1. Cloner le projet
 
-### Issues
+```bash
+git clone https://github.com/Zineup/Laravel6-Socle.git
+```
+#### 2. Se positionner dans le répértoire du projet
 
-If you come across any issues please [report them here](https://github.com/rappasoft/laravel-boilerplate/issues).
+```bash
+cd Laravel6-Socle
+```
 
-### Contributing
+#### 3. Accéder à la branche 
 
-Thank you for considering contributing to the Laravel Boilerplate project! Please feel free to make any pull requests, or e-mail me a feature request you would like to see in the future to Anthony Rappa at rappa819@gmail.com.
+```bash
+git checkout feature-ThirdPartyAuthentication-Keycloak
+```
 
-### Security Vulnerabilities
+#### 4. Créer le fichier .env
 
-If you discover a security vulnerability within this boilerplate, please send an e-mail to Anthony Rappa at rappa819@gmail.com, or create a pull request if possible. All security vulnerabilities will be promptly addressed.
+```bash
+cp .env.example .env
+```
 
-### Donations
+#### 4. Modifier les informations du Serveur
 
-If you would like to help the continued efforts of this project, any size [donations](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=JJWUZ4E9S9SFG&lc=US&item_name=Laravel%205%20Boilerplate&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) are welcomed and highly appreciated.
+```bash
+KEYCLOAK_BASE_URL=http://localhost:8080/auth
+KEYCLOAK_REALM=
+KEYCLOAK_REALM_PUBLIC_KEY=
+KEYCLOAK_CLIENT_ID=
+KEYCLOAK_CLIENT_SECRET=
+```
+#### 5. Exécuter les commandes suivantes:
 
-### License
+a. ``composer install``
 
-MIT: [http://anthony.mit-license.org](http://anthony.mit-license.org)
+b. ``npm install``
+
+c. ``npm run dev``
+
+d. ``php artisan key:generate``
+
+e. ``php artisan storage:link``
+
+#### 5. Démarrer l'application
+
+```bash
+php artisan serve
+```
